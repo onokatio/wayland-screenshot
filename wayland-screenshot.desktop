@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=wayland-screenshot
+Comment=Take screenshot on wayland
+Exec=wayland-screenshot
+Terminal=false
+Type=Application
+Encoding=UTF-8
+Icon=xterm-color_48x48
+Categories=System;TerminalEmulator;
+Keywords=screenshot;wayland;
