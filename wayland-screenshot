@@ -1,53 +1,53 @@
 #!/bin/bash
 
-take_all(){
-	grim
-}
+FILEDIR=~/Downloads
+OPTION=()
 
-take_window(){
-	grim -g "$(slurp)"
-}
-
-take_area(){
-	grim -g "$(slurp)"
-}
 values=$(zenity \
   --title=wayland-screenshot \
   --text="Option" \
   --forms \
   --add-combo="Mode" \
     --combo-values="All screen|Specific window|Specific area" \
-  --add-combo="Include cursol[no]" \
-    --combo-values="yes|no" \
-    --add-entry="time to wait[0s]")
+  --add-combo="Include cursol[default: no]" \
+    --combo-values="no|yes" \
+    --add-entry="time to wait[default: 0s]")
 
 result=$?
-
-echo $result
-echo $values
 
 mode=$(echo $values | cut -d '|' -f 1)
 cursol=$(echo $values | cut -d '|' -f 2)
 wait=$(echo $values | cut -d '|' -f 3)
-
-echo $mode
-echo $cursol
-echo $wait
 
 if [ "$result" -eq 1 ];then      # select cancel
 	echo "canceling"
 	exit
 fi
 
+if [ ! -z "$cursol" ] &&  [ "$cursol" == yes ];then
+	OPTION+="-c"
+fi
+
 if [ -z "$mode" ] ;then       # select nothing
 	echo "mode is null"
+	zenity \
+		--title=wayland-screenshot \
+		--width=200 \
+		--warning \
+		--text="Mode empty"
 	exit
-elif [ "$mode" == "All screen" ];then  # select All screen
-	take_all
+fi
+
+if [ ! -z "$wait" ];then
+	sleep $wait
+fi
+
+if [ "$mode" == "All screen" ];then  # select All screen
+	grim $OPTION $FILEDIR/$(date +%F_%T)
 elif [ "$mode" == "Specific window" ];then  # select specify window
-	take_window
+	grim -g "$(swaymsg -t get_tree | jq -r '.. | select(.pid? and .visible?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp)" $OPTION $FILEDIR/$(date +%F_%T)
 elif [ "$mode" == "Specific area" ];then  # select specfy area
-	take_area
+	grim -g "$(slurp)" $OPTION $FILEDIR/$(date +%F_%T)
 else                         # error
 	echo $mode
 fi
