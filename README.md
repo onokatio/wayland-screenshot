@@ -1,5 +1,12 @@
 # wayland-screenshot
 
+## Depends
+
+- grim
+- slurp
+- zenity
+- jq
+
 ## Install
 
 - Archlinux(AUR)
