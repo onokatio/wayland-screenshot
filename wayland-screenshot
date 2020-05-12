@@ -43,11 +43,11 @@ if [ ! -z "$wait" ];then
 fi
 
 if [ "$mode" == "All screen" ];then  # select All screen
-	grim $OPTION $FILEDIR/$(date +%F_%T)
+	grim $OPTION $FILEDIR/Screenshot_$(date +%F_%T).png
 elif [ "$mode" == "Specific window" ];then  # select specify window
-	grim -g "$(swaymsg -t get_tree | jq -r '.. | select(.pid? and .visible?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp)" $OPTION $FILEDIR/$(date +%F_%T)
+	grim -g "$(swaymsg -t get_tree | jq -r '.. | select(.pid? and .visible?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp)" $OPTION $FILEDIR/Screenshot_$(date +%F_%T).png
 elif [ "$mode" == "Specific area" ];then  # select specfy area
-	grim -g "$(slurp)" $OPTION $FILEDIR/$(date +%F_%T)
+	grim -g "$(slurp)" $OPTION $FILEDIR/Screenshot_$(date +%F_%T).png
 else                         # error
 	echo $mode
 fi
