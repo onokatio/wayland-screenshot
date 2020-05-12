@@ -1,0 +1,53 @@
+#!/bin/bash
+
+take_all(){
+	grim
+}
+
+take_window(){
+	grim -g "$(slurp)"
+}
+
+take_area(){
+	grim -g "$(slurp)"
+}
+values=$(zenity \
+  --title=wayland-screenshot \
+  --text="Option" \
+  --forms \
+  --add-combo="Mode" \
+    --combo-values="All screen|Specific window|Specific area" \
+  --add-combo="Include cursol[no]" \
+    --combo-values="yes|no" \
+    --add-entry="time to wait[0s]")
+
+result=$?
+
+echo $result
+echo $values
+
+mode=$(echo $values | cut -d '|' -f 1)
+cursol=$(echo $values | cut -d '|' -f 2)
+wait=$(echo $values | cut -d '|' -f 3)
+
+echo $mode
+echo $cursol
+echo $wait
+
+if [ "$result" -eq 1 ];then      # select cancel
+	echo "canceling"
+	exit
+fi
+
+if [ -z "$mode" ] ;then       # select nothing
+	echo "mode is null"
+	exit
+elif [ "$mode" == "All screen" ];then  # select All screen
+	take_all
+elif [ "$mode" == "Specific window" ];then  # select specify window
+	take_window
+elif [ "$mode" == "Specific area" ];then  # select specfy area
+	take_area
+else                         # error
+	echo $mode
+fi
