@@ -9,14 +9,14 @@ values=$(zenity \
   --forms \
   --add-combo="Mode" \
     --combo-values="All screen|Specific window|Specific area" \
-  --add-combo="Include cursol[default: no]" \
+  --add-combo="Include cursor[default: no]" \
     --combo-values="no|yes" \
     --add-entry="time to wait[default: 0s]")
 
 result=$?
 
 mode=$(echo $values | cut -d '|' -f 1)
-cursol=$(echo $values | cut -d '|' -f 2)
+cursor=$(echo $values | cut -d '|' -f 2)
 wait=$(echo $values | cut -d '|' -f 3)
 
 if [ "$result" -eq 1 ];then      # select cancel
@@ -24,7 +24,7 @@ if [ "$result" -eq 1 ];then      # select cancel
 	exit
 fi
 
-if [ ! -z "$cursol" ] &&  [ "$cursol" == yes ];then
+if [ ! -z "$cursor" ] &&  [ "$cursor" == yes ];then
 	OPTION+="-c"
 fi
 
