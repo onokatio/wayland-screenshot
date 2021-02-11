@@ -11,13 +11,17 @@ values=$(zenity \
     --combo-values="All screen|Specific window|Specific area" \
   --add-combo="Include cursor[default: no]" \
     --combo-values="no|yes" \
-    --add-entry="time to wait[default: 0s]")
+    --add-entry="time to wait[default: 0s]" \
+    --add-combo="Copy to clipboard[default: yes]" \
+    --combo-values="yes|no" \
+      )
 
 result=$?
 
 mode=$(echo $values | cut -d '|' -f 1)
 cursor=$(echo $values | cut -d '|' -f 2)
 wait=$(echo $values | cut -d '|' -f 3)
+clipboard=$(echo $values | cut -d '|' -f 4)
 
 if [ "$result" -eq 1 ];then      # select cancel
 	echo "canceling"
@@ -43,11 +47,25 @@ if [ ! -z "$wait" ];then
 fi
 
 if [ "$mode" == "All screen" ];then  # select All screen
-	grim $OPTION $FILEDIR/Screenshot_$(date +%F_%H.%M.%S).png
+	true
 elif [ "$mode" == "Specific window" ];then  # select specify window
-	grim -g "$(swaymsg -t get_tree | jq -r '.. | select(.pid? and .visible?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp)" $OPTION $FILEDIR/Screenshot_$(date +%F_%H.%M.%S).png
+	GEO="$(swaymsg -t get_tree | jq -r '.. | select(.pid? and .visible?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp)"
 elif [ "$mode" == "Specific area" ];then  # select specfy area
-	grim -g "$(slurp)" $OPTION $FILEDIR/Screenshot_$(date +%F_%H.%M.%S).png
+	GEO="$(slurp)"
 else                         # error
 	echo $mode
+fi
+
+if [ -z "$clipboard" ] || [ "$clipboard" == yes ];then
+	if [ -z "$GEO" ]; then
+		grim $OPTION - | wl-copy;
+	else
+		grim $OPTION -g "$GEO" - | wl-copy;
+	fi
+else
+	if [ -z "$GEO" ]; then
+		grim $OPTION $FILEDIR/Screenshot_$(date +%F_%H.%M.%S).png
+	else
+		grim $OPTION -g "$GEO" $FILEDIR/Screenshot_$(date +%F_%H.%M.%S).png
+	fi
 fi
