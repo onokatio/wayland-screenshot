@@ -6,13 +6,14 @@
 - slurp
 - zenity
 - jq
+- wl-clipboard
 
 ## Install
 
 - Archlinux(AUR)
 
 ```
-$ yay -S wayland-screenshot
+$ yay -S wayland-screenshot-git
 ```
 
 - Manual
